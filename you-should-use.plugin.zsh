@@ -262,6 +262,15 @@ function _check_aliases() {
         if [[ "$typed" = "$best_match" || "$typed" = "$best_match "* ]]; then
             return
         fi
+        # also check if first word of typed is an alias that expands to best_match
+        local first_word="${typed[(w)1]}"
+        if [[ -n "${aliases[$first_word]}" ]]; then
+            local expanded_first="${aliases[$first_word]}"
+            if [[ "$expanded_first" = "$best_match" || "$expanded_first" = "$best_match "* || \
+                  "$expanded_first" = *" $best_match" || "$expanded_first" = *" $best_match "* ]]; then
+                return
+            fi
+        fi
         ysu_message "alias" "$value" "$best_match"
         _check_ysu_hardcore "$best_match"
     fi
